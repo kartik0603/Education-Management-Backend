@@ -17,11 +17,11 @@ const register = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
   
-    // Validate email format using a simple regex pattern
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ message: "Invalid email format" });
     }
+    
   
     try {
       // Check if user already exists
@@ -68,7 +68,7 @@ const register = async (req, res) => {
       }
   
       const token = jwt.sign(
-        { id: user._id, role: user._id.role },
+        { id: user._id, role: user.role },
         process.env.JWT_SECRET_KEY,
         { expiresIn: "1h" }
       );
@@ -117,7 +117,12 @@ const register = async (req, res) => {
         from: `"Support" <${process.env.EMAIL}>`,
         to: email,
         subject: "Password Reset Request",
-        text: `${req.protocol}://${req.get("host")}/api/users/reset-password/${token}`,
+        // text: `${req.protocol}://${req.get("host")}/api/users/reset-password/${token}`,
+        html: `
+        <p>You requested to reset your password. Click the link below to reset it:</p>
+        <a href="${req.protocol}://${req.get("host")}/api/users/reset-password/${token}">Reset Password</a>
+        <p>If you did not request this, please ignore this email.</p>
+      `,
       };
   
       await transporter.sendMail(mailOptions);
@@ -140,7 +145,7 @@ const register = async (req, res) => {
   
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-      console.log("Decoded token:", decoded); 
+      // console.log("Decoded token:", decoded); 
   
       const user = await User.findOne({ email: decoded.email });
       if (!user) {

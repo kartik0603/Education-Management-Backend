@@ -14,27 +14,31 @@ const {
   unenrollFromCourse
 } = require("../controllers/course.controle.js");
 
+// Apply 'protect' middleware to all routes
 courseRouter.use(protect);
 
-// Route to create a course (Admin or Teacher)
-courseRouter.post("/create-course", roleCheck("Admin", "Teacher"), createCourse);
+// Only allow users with "admin" role to create a course
+courseRouter.post("/admin/course", roleCheck(["Admin"]), createCourse);
 
-// Route to update a course (Admin or Teacher)
-courseRouter.put("/update-course/:courseId", roleCheck("Admin", "Teacher"), updateCourse);
+// Allow both "teacher" and "admin" roles to create a course
+courseRouter.post("/create-course", roleCheck(["Teacher", "Admin"]), createCourse);
 
-// Route to get all courses (Admin, Teacher, or Student)
-courseRouter.get("/all-courses", roleCheck("Admin", "Teacher", "Student"), getAllCourses);
+// Allow "Admin" or "Teacher" to update a course
+courseRouter.put("/update-course/:courseId", roleCheck(["Admin", "Teacher"]), updateCourse);
 
-// Route to get enrolled courses for the student
-courseRouter.get("/enrolled-courses", roleCheck("Student"), getEnrolledCourses);
+// Allow "Admin", "Teacher", or "Student" to view all courses
+courseRouter.get("/all-courses", roleCheck(["Admin", "Teacher", "Student"]), getAllCourses);
 
-// Route to delete a course (Admin or Teacher)
-courseRouter.delete("/delete-course/:courseId", roleCheck("Admin", "Teacher"), deleteCourse);
+// Allow "Student" to view enrolled courses
+courseRouter.get("/enrolled-courses", roleCheck(["Student"]), getEnrolledCourses);
 
-// Route to enroll in a course (Student only)
-courseRouter.post("/enroll/:courseId", roleCheck("Student"), enrollInCourse);
+// Only allow "Admin" or "Teacher" to delete a course
+courseRouter.delete("/delete-course/:courseId", roleCheck(["Admin", "Teacher"]), deleteCourse);
 
-// Route to unenroll from a course (Student only)
-courseRouter.post("/unenroll/:courseId", roleCheck("Student"), unenrollFromCourse);
+// Allow "Student" to enroll in a course
+courseRouter.post("/enroll/:courseId", roleCheck(["Student"]), enrollInCourse);
+
+// Allow "Student" to unenroll from a course
+courseRouter.post("/unenroll/:courseId", roleCheck(["Student"]), unenrollFromCourse);
 
 module.exports = courseRouter;

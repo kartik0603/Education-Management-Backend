@@ -1,23 +1,22 @@
 const Course = require('../models/course.schema.js');
 const User = require('../models/user.schema.js');
+const mongoose = require('mongoose'); 
 
 
 // Create a new course
 const createCourse = async (req, res) => {
   try {
-    const { title, description, teacherId } = req.body;
+    const { title, description } = req.body;
 
-    // Validate teacher
-    const teacher = await User.findById(teacherId);
-    if (!teacher) {
-      return res.status(404).json({ message: "Teacher not found" });
-    }
+    
+    const teacherId = req.user.id;
 
+    // Create a new course with the teacher field
     const newCourse = new Course({
       title,
       description,
-      teacher: teacherId,
-      students: []
+      teacher: teacherId, 
+      students: []  
     });
 
     await newCourse.save();
@@ -86,17 +85,23 @@ const deleteCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
 
-    const course = await Course.findById(courseId);
+    // Validate if the courseId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+      return res.status(400).json({ message: "Invalid course ID" });
+    }
+
+    // Attempt to delete the course using deleteOne instead of remove
+    const course = await Course.findByIdAndDelete(courseId);
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
 
-    await course.remove();
     res.status(200).json({ message: "Course deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error deleting course", error: error.message });
   }
 };
+
 
 // Enroll a student in a course
 const enrollInCourse = async (req, res) => {
