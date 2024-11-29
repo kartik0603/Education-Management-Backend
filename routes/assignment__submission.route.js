@@ -37,7 +37,7 @@ assignmentSubmissionRouter.get("/submissions/student/:courseId/:studentId", role
 
 // Student routes for assignment and submission
 assignmentSubmissionRouter.get("/assignments/:courseId", roleCheck("Teacher", "Student"), getStudentAssignments);
-assignmentSubmissionRouter.put("/submissions/:submissionId", roleCheck("Teacher", "Student"), updateSubmission);
+assignmentSubmissionRouter.put("/update-submission/:submissionId", roleCheck("Teacher", "Student"), updateSubmission);
 assignmentSubmissionRouter.delete("/submissions/:submissionId", roleCheck("Teacher", "Student"), deleteSubmission);
 assignmentSubmissionRouter.post("/submit-assignment", roleCheck("Student"), submitAssignment);
 

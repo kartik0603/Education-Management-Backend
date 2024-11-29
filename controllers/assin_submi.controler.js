@@ -226,6 +226,7 @@ const updateSubmission = async (req, res) => {
     const { submissionId } = req.params;
     const { assignmentId, grade, status } = req.body;
     const studentId = req.user.id;
+    const userRole = req.user.role; 
 
     // Find the submission
     const submission = await Submission.findById(submissionId);
@@ -233,8 +234,8 @@ const updateSubmission = async (req, res) => {
       return res.status(404).json({ message: "Submission not found" });
     }
 
-    // Ensure the submission belongs to the authenticated student
-    if (submission.student.toString() !== studentId) {
+    // Allow the student or teacher to update the submission
+    if (submission.student.toString() !== studentId && userRole !== 'Teacher') {
       return res.status(403).json({ message: "You cannot update another student's submission" });
     }
 
@@ -251,6 +252,7 @@ const updateSubmission = async (req, res) => {
     res.status(500).json({ message: "Error updating submission", error: error.message });
   }
 };
+
 
 // 8. Student deletes their assignment submission
 const deleteSubmission = async (req, res) => {
