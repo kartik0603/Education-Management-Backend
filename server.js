@@ -15,8 +15,8 @@ app.use(bodyParser.json());
 // Import Routes
 const assignmentSubmissionRouters = require("./routes/assignment__submission.route.js");
 const gradeRouter = require("./routes/grade.route.js");
-const userRoutes = require("./routes/user.routes");
-const courseRoutes = require("./routes/course.routes");
+const userRoutes = require("./routes/user.route.js");
+const courseRoutes = require("./routes/course.route.js");
 
 
 app.use("/api/submissions", assignmentSubmissionRouters);

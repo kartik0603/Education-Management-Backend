@@ -10,6 +10,8 @@ const {
   getAllCourses,
   getEnrolledCourses,
   deleteCourse,
+  enrollInCourse,
+  unenrollFromCourse
 } = require("../controllers/course.controle.js");
 
 courseRouter.use(protect);

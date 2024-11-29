@@ -1,6 +1,6 @@
-const Grade = require("../models/grade.model.js");
-const Course = require("../models/course.model.js");
-const Submission = require("../models/submission.model.js");
+const Grade = require("../models/grade.schema.js");
+const Course = require("../models/course.schema.js");
+const Submission = require("../models/submission.schema.js");
 
 // 1. Assign grade to a student
 const assignGrade = async (req, res) => {
