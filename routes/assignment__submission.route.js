@@ -9,6 +9,7 @@ const {
     createAssignment,
     updateAssignment,
     deleteAssignment,
+    getAllAssignmentsByTeacher,
     getAllSubmissions,
     getStudentSubmissions,
     getStudentAssignments,
@@ -27,6 +28,8 @@ assignmentSubmissionRouter.post("/assignments", roleCheck("Teacher"), createAssi
 assignmentSubmissionRouter.put("/assignments/:assignmentId", roleCheck("Teacher"), updateAssignment);
 assignmentSubmissionRouter.delete("/assignments/:assignmentId", roleCheck("Teacher"), deleteAssignment);
 assignmentSubmissionRouter.put("/assignments/:assignmentId/due-date", roleCheck("Teacher"), setDueDate);
+// / Assuming you have a role check middleware for the teacher
+assignmentSubmissionRouter.get('/get-assignments-by-teacher/:teacherId/', roleCheck('Teacher'), getAllAssignmentsByTeacher);
 
 // Teacher routes for viewing submissions
 assignmentSubmissionRouter.get("/submissions", roleCheck("Teacher"), getAllSubmissions);
@@ -36,6 +39,6 @@ assignmentSubmissionRouter.get("/submissions/student/:courseId/:studentId", role
 assignmentSubmissionRouter.get("/assignments/:courseId", roleCheck("Teacher", "Student"), getStudentAssignments);
 assignmentSubmissionRouter.put("/submissions/:submissionId", roleCheck("Teacher", "Student"), updateSubmission);
 assignmentSubmissionRouter.delete("/submissions/:submissionId", roleCheck("Teacher", "Student"), deleteSubmission);
-assignmentSubmissionRouter.post("/submissions", roleCheck("Student"), submitAssignment);
+assignmentSubmissionRouter.post("/submit-assignment", roleCheck("Student"), submitAssignment);
 
 module.exports = assignmentSubmissionRouter;

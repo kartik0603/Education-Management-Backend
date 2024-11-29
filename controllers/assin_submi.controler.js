@@ -1,6 +1,7 @@
 const Assignment = require("../models/assignment.schema.js");
 const Submission = require("../models/submission.schema.js");
 const Course = require("../models/course.schema.js");
+const mongoose = require('mongoose');
 
 // 1. Create an assignment
 const createAssignment = async (req, res) => {
@@ -66,21 +67,28 @@ const updateAssignment = async (req, res) => {
 };
 
 // 3. Delete an assignment by a teacher
+
+
 const deleteAssignment = async (req, res) => {
   try {
     const { assignmentId } = req.params;
+    console.log("Assignment ID:", assignmentId);  // Log assignmentId
+
+    // Convert the assignmentId to ObjectId (if it's a valid string)
+    if (!mongoose.Types.ObjectId.isValid(assignmentId)) {
+      return res.status(400).json({ message: "Invalid assignment ID format" });
+    }
 
     // Check if the assignment exists
     const assignment = await Assignment.findById(assignmentId);
+    console.log("Assignment found:", assignment);  // Log assignment
+
     if (!assignment) {
       return res.status(404).json({ message: "Assignment not found" });
     }
 
-    // Delete all submissions related to this assignment
-    await Submission.deleteMany({ assignment: assignmentId });
-
     // Delete the assignment
-    await assignment.remove();
+    await Assignment.findByIdAndDelete(assignmentId);
 
     res.status(200).json({
       message: "Assignment deleted successfully",
@@ -89,6 +97,40 @@ const deleteAssignment = async (req, res) => {
     res.status(500).json({ message: "Error deleting assignment", error: error.message });
   }
 };
+
+
+
+
+
+
+// Controller to get all assignments by teacher
+
+// Controller to get all assignments by teacher
+const getAllAssignmentsByTeacher = async (req, res) => {
+  console.log("User from middleware:", req.user);  // Log the entire user object to check
+  const teacherId = req.user.id;
+  // Get teacherId from the user object
+  console.log("Teacher ID from user:", teacherId);  // Check if the teacherId exists
+  
+  try {
+    const assignments = await Assignment.find({ teacher: teacherId })
+      .populate('courseId', 'title')
+      .exec();
+
+    console.log("Assignments found:", assignments);
+    
+    if (!assignments || assignments.length === 0) {
+      return res.status(404).json({ message: 'No assignments found for this teacher.' });
+    }
+
+    res.status(200).json(assignments);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
 
 // 4. Teacher views all submissions from all students
 const getAllSubmissions = async (req, res) => {
@@ -123,22 +165,16 @@ const getAllSubmissions = async (req, res) => {
 const getStudentSubmissions = async (req, res) => {
   try {
     const { courseId, studentId } = req.params;
-    const teacherId = req.user.id;
+    // console.log("Course ID passed:", courseId);
+    // console.log("Student ID passed:", studentId);
 
-    // Check if the teacher is authorized to view the submissions for this student
-    const assignments = await Assignment.find({
-      course: courseId,
-      teacher: teacherId,
-    });
-    if (!assignments.length) {
-      return res.status(404).json({ message: "No assignments found for this course" });
-    }
-
-    // Get submissions for the student
+    // Fetch the submissions
     const submissions = await Submission.find({
       course: courseId,
       student: studentId,
     }).populate("assignment", "title description");
+
+    // console.log("Submissions found:", submissions); 
 
     if (!submissions.length) {
       return res.status(404).json({ message: "No submissions found for this student" });
@@ -155,6 +191,13 @@ const getStudentSubmissions = async (req, res) => {
     });
   }
 };
+
+
+
+
+
+
+
 
 // 6. Student views their assignments for a course
 const getStudentAssignments = async (req, res) => {
@@ -320,6 +363,7 @@ module.exports = {
   createAssignment,
   updateAssignment,
   deleteAssignment,
+  getAllAssignmentsByTeacher,
   getAllSubmissions,
   getStudentSubmissions,
   getStudentAssignments,

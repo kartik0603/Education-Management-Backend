@@ -1,43 +1,33 @@
 const mongoose = require('mongoose');
 
-const assignmentSchema = new mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-      trim: true
-    },
-    description: {
-      type: String,
-      required: true,
-      trim: true
-    },
-    course: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Course',
-      required: true
-    },
-    teacher: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true
-    },
-    dueDate: {
-      type: Date,
-      required: true
-    },
-    submissions: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Submission'
-      }
-    ]
+const assignmentSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true
   },
-  { timestamps: true }
-);
-
-// Add indexes
-assignmentSchema.index({ course: 1, teacher: 1 }); 
+  description: {
+    type: String,
+    required: true
+  },
+  courseId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Course', // Ensure 'Course' is the correct model name
+    required: true
+  },
+  teacher: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', // Assuming you have a User model
+    required: true
+  },
+  dueDate: {
+    type: Date,
+    required: true
+  },
+  submissions: {
+    type: Array,
+    default: []
+  }
+});
 
 const Assignment = mongoose.model('Assignment', assignmentSchema);
 module.exports = Assignment;
