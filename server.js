@@ -4,6 +4,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
+const swaggerConfig = require("./swaggerConfig.js");
 
 dotenv.config();
 
@@ -23,10 +24,17 @@ app.use("/api/submissions", assignmentSubmissionRouters);
 app.use("/api/grades", gradeRouter);
 app.use("/api/users", userRoutes); 
 app.use("/api/courses", courseRoutes); 
+swaggerConfig(app);
+
 
 // 404 handler for undefined routes
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
+});
+
+// Swagger UI setup
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Welcome to the Education Management API" });
 });
 
 // Error handling middleware
