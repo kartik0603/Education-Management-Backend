@@ -13,7 +13,7 @@ const swaggerDefinition = {
         {
             url:
                 process.env.NODE_ENV === "production"
-                    ? process.env.PROD_BASE_URL || "https://your-production-url.com/api"
+                    ? process.env.PROD_BASE_URL || "https://education-management-backend.onrender.com/api"
                     : process.env.DEV_BASE_URL || "http://localhost:5000/api",
             description:
                 process.env.NODE_ENV === "production"
