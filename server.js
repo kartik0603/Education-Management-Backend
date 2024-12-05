@@ -27,12 +27,9 @@ app.use("/api/courses", courseRoutes);
 swaggerConfig(app);
 
 
-// 404 handler for undefined routes
-app.use((req, res) => {
-  res.status(404).json({ message: "Route not found" });
-});
 
-// Swagger UI setup
+
+
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Welcome to the Education Management API" });
 });
