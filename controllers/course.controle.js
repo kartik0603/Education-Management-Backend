@@ -11,7 +11,7 @@ const createCourse = async (req, res) => {
     
     const teacherId = req.user.id;
 
-    // Create a new course with the teacher field
+    
     const newCourse = new Course({
       title,
       description,
@@ -61,7 +61,7 @@ const getAllCourses = async (req, res) => {
   }
 };
 
-// Get courses enrolled by the current user (student)
+// Get courses Enrolled by a user (student)
 const getEnrolledCourses = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -85,12 +85,12 @@ const deleteCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
 
-    // Validate if the courseId is a valid ObjectId
+   
     if (!mongoose.Types.ObjectId.isValid(courseId)) {
       return res.status(400).json({ message: "Invalid course ID" });
     }
 
-    // Attempt to delete the course using deleteOne instead of remove
+
     const course = await Course.findByIdAndDelete(courseId);
     if (!course) {
       return res.status(404).json({ message: "Course not found" });

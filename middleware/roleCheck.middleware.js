@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 
 const roleCheck = (roles) => async (req, res, next) => {
   try {
-    // Get token from Authorization header
+  
     const token = req.header("Authorization")?.replace("Bearer ", "");
 
     if (!token) {
@@ -13,22 +13,22 @@ const roleCheck = (roles) => async (req, res, next) => {
       return res.status(401).json({ message: "Access Denied. No token provided." });
     }
 
-    // Verify the token and decode it
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
     // console.log("Decoded JWT:", decoded);
 
-    // Find the user by decoded ID
+    
     const user = await User.findById(decoded.id);
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });
     }
 
-    // Attach the user to the request object
+   
     req.user = user;
 
-    // Check if the user's role matches any of the required roles
+   
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({ message: "Access Denied. You do not have permission." });
     }

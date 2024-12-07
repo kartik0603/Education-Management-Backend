@@ -11,17 +11,16 @@ const protect = async (req, res, next) => {
   }
 
   try {
-    // Verify the token and get the decoded information
+   
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-    // Find the user by decoded ID
     const user = await User.findById(decoded.id);
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });
     }
 
-    // Attach user data to request object
+  
     req.user = user;
 
     if (!req.user) {
@@ -32,7 +31,7 @@ const protect = async (req, res, next) => {
   } catch (error) {
     console.error("Token validation error:", error);
 
-    // specific error type,
+  
     if (error.name === "TokenExpiredError") {
       return res
         .status(401)

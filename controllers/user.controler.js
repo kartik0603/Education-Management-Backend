@@ -12,7 +12,7 @@ const { hashPassword, comparePassword } = require("../secure/hashPassword.js");
 const register = async (req, res) => {
     const { name, email, password, role } = req.body;
   
-    // Basic validation
+   
     if (!email || !password || !name || !role) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -24,16 +24,16 @@ const register = async (req, res) => {
     
   
     try {
-      // Check if user already exists
+    
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(400).json({ message: "User already exists" });
       }
   
-      // Hash the password before saving
+      
       const hashedPassword = await hashPassword(password);
   
-      // Create the user
+     
       const user = await User.create({
         name,
         email,
@@ -119,7 +119,7 @@ const register = async (req, res) => {
         from: `"Support" <${process.env.EMAIL}>`,
         to: email,
         subject: "Password Reset Request",
-        // text: `${req.protocol}://${req.get("host")}/api/users/reset-password/${token}`,
+        
         html: `
         <p>You requested to reset your password. Click the link below to reset it:</p>
         <a href="${req.protocol}://${req.get("host")}/api/users/reset-password/${token}">Reset Password</a>
@@ -147,14 +147,14 @@ const register = async (req, res) => {
   
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-      // console.log("Decoded token:", decoded); 
+     
   
       const user = await User.findOne({ email: decoded.email });
       if (!user) {
         return res.status(404).send({ message: "Invalid token or user not found" });
       }
   
-      // Update password
+  
       user.password = await hashPassword(password); 
       await user.save();
   

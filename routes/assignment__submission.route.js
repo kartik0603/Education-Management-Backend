@@ -28,6 +28,8 @@ assignmentSubmissionRouter.post("/assignments", roleCheck("Teacher"), createAssi
 assignmentSubmissionRouter.put("/assignments/:assignmentId", roleCheck("Teacher"), updateAssignment);
 assignmentSubmissionRouter.delete("/assignments/:assignmentId", roleCheck("Teacher"), deleteAssignment);
 assignmentSubmissionRouter.put("/assignments/:assignmentId/due-date", roleCheck("Teacher"), setDueDate);
+
+
 // / Assuming you have a role check middleware for the teacher
 assignmentSubmissionRouter.get('/get-assignments-by-teacher/:teacherId/', roleCheck('Teacher'), getAllAssignmentsByTeacher);
 

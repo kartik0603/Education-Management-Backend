@@ -3,18 +3,18 @@ const Submission = require("../models/submission.schema.js");
 const Course = require("../models/course.schema.js");
 const mongoose = require('mongoose');
 
-// 1. Create an assignment
+//  Create Assignment
 const createAssignment = async (req, res) => {
   try {
     const { title, description, courseId, dueDate } = req.body;
     const teacherId = req.user.id;
 
-    // Validate input
+    
     if (!title || !description || !courseId || !dueDate) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Find the course to make sure it's valid
+    
     const course = await Course.findById(courseId);
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
@@ -38,19 +38,19 @@ const createAssignment = async (req, res) => {
   }
 };
 
-// 2. Update an assignment by a teacher
+//  Update assignment 
 const updateAssignment = async (req, res) => {
   try {
     const { assignmentId } = req.params;
     const { title, description, dueDate } = req.body;
 
-    // Check if the assignment exists
+    
     const assignment = await Assignment.findById(assignmentId);
     if (!assignment) {
       return res.status(404).json({ message: "Assignment not found" });
     }
 
-    // Update the assignment
+    
     assignment.title = title || assignment.title;
     assignment.description = description || assignment.description;
     assignment.dueDate = dueDate || assignment.dueDate;
@@ -66,28 +66,26 @@ const updateAssignment = async (req, res) => {
   }
 };
 
-// 3. Delete an assignment by a teacher
-
-
+//  Delete  assignment 
 const deleteAssignment = async (req, res) => {
   try {
     const { assignmentId } = req.params;
-    console.log("Assignment ID:", assignmentId);  // Log assignmentId
+    // console.log("Assignment ID:", assignmentId); 
 
-    // Convert the assignmentId to ObjectId (if it's a valid string)
+    // Convert  assignmentId to ObjectId 
     if (!mongoose.Types.ObjectId.isValid(assignmentId)) {
       return res.status(400).json({ message: "Invalid assignment ID format" });
     }
 
-    // Check if the assignment exists
+    
     const assignment = await Assignment.findById(assignmentId);
-    console.log("Assignment found:", assignment);  // Log assignment
+    // console.log("Assignment found:", assignment);  
 
     if (!assignment) {
       return res.status(404).json({ message: "Assignment not found" });
     }
 
-    // Delete the assignment
+    
     await Assignment.findByIdAndDelete(assignmentId);
 
     res.status(200).json({
@@ -103,14 +101,14 @@ const deleteAssignment = async (req, res) => {
 
 
 
-// Controller to get all assignments by teacher
 
-// Controller to get all assignments by teacher
+
+// get All assignments 
 const getAllAssignmentsByTeacher = async (req, res) => {
-  console.log("User from middleware:", req.user);  // Log the entire user object to check
+  // console.log("User from middleware:", req.user);  
   const teacherId = req.user.id;
-  // Get teacherId from the user object
-  console.log("Teacher ID from user:", teacherId);  // Check if the teacherId exists
+  
+  console.log("Teacher ID from user:", teacherId);  
   
   try {
     const assignments = await Assignment.find({ teacher: teacherId })
@@ -132,13 +130,13 @@ const getAllAssignmentsByTeacher = async (req, res) => {
 
 
 
-// 4. Teacher views all submissions from all students
+//   views all submissions from All Students
 const getAllSubmissions = async (req, res) => {
   try {
     const { courseId } = req.params;
     const teacherId = req.user.id;
 
-    // Get all assignments for the course
+  
     const assignments = await Assignment.find({
       course: courseId,
       teacher: teacherId,
@@ -147,7 +145,7 @@ const getAllSubmissions = async (req, res) => {
       return res.status(404).json({ message: "No assignments found for this course" });
     }
 
-    // Get all submissions for the course
+    
     const submissions = await Submission.find({ course: courseId })
       .populate("student", "name email")
       .populate("assignment", "title description");
@@ -161,14 +159,14 @@ const getAllSubmissions = async (req, res) => {
   }
 };
 
-// 5. Teacher views submissions for a specific student
+//  views submissions Specific Student
 const getStudentSubmissions = async (req, res) => {
   try {
     const { courseId, studentId } = req.params;
     // console.log("Course ID passed:", courseId);
     // console.log("Student ID passed:", studentId);
 
-    // Fetch the submissions
+
     const submissions = await Submission.find({
       course: courseId,
       student: studentId,
@@ -199,13 +197,13 @@ const getStudentSubmissions = async (req, res) => {
 
 
 
-// 6. Student views their assignments for a course
+//  Student views their assignments for a course
 const getStudentAssignments = async (req, res) => {
   try {
     const { courseId } = req.params;
     const studentId = req.user.id;
 
-    // Get all assignments for the course
+    
     const assignments = await Assignment.find({ course: courseId });
     if (!assignments.length) {
       return res.status(404).json({ message: "No assignments found for this course" });
@@ -220,7 +218,7 @@ const getStudentAssignments = async (req, res) => {
   }
 };
 
-// 7. Student updates their submitted assignment
+//  Student Update their submitted assignment
 const updateSubmission = async (req, res) => {
   try {
     const { submissionId } = req.params;
@@ -254,27 +252,27 @@ const updateSubmission = async (req, res) => {
 };
 
 
-// 8. Student deletes their assignment submission
+//  Student delete their submited Assignment
 const deleteSubmission = async (req, res) => {
   try {
     const { submissionId } = req.params;
     const studentId = req.user.id;
 
-    // Find the submission
+  
     const submission = await Submission.findById(submissionId);
     if (!submission) {
       return res.status(404).json({ message: "Submission not found" });
     }
 
-    // Ensure the submission belongs to the authenticated student
+    
     if (submission.student.toString() !== studentId) {
       return res.status(403).json({ message: "You cannot delete another student's submission" });
     }
 
-    // Delete the submission
+   
     await submission.remove();
 
-    // Remove the submission from the assignment's submissions list
+    // Remove the submission from the Assignment's Submitted List
     const assignment = await Assignment.findById(submission.assignment);
     assignment.submissions = assignment.submissions.filter(
       (submissionId) => submissionId.toString() !== submissionId
@@ -289,19 +287,19 @@ const deleteSubmission = async (req, res) => {
   }
 };
 
-// 9. Teacher sets the due date for an assignment
+//   sets the due date
 const setDueDate = async (req, res) => {
   try {
     const { assignmentId } = req.params;
     const { dueDate } = req.body;
 
-    // Find the assignment
+
     const assignment = await Assignment.findById(assignmentId);
     if (!assignment) {
       return res.status(404).json({ message: "Assignment not found" });
     }
 
-    // Update the due date
+   
     assignment.dueDate = dueDate;
     await assignment.save();
 
@@ -314,18 +312,18 @@ const setDueDate = async (req, res) => {
   }
 };
 
-// 10. Student submits an assignment
+// 10. Student submits  Assignment
 const submitAssignment = async (req, res) => {
   try {
     const { assignmentId, courseId, assignmentContent } = req.body;
     const studentId = req.user.id;
 
-    // Validate input
+
     if (!assignmentId || !courseId || !assignmentContent) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Check if the course exists and if the student is enrolled in the course
+   
     const course = await Course.findById(courseId);
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
@@ -335,13 +333,13 @@ const submitAssignment = async (req, res) => {
       return res.status(403).json({ message: "You are not enrolled in this course" });
     }
 
-    // Check if the assignment exists
+   
     const assignment = await Assignment.findById(assignmentId);
     if (!assignment) {
       return res.status(404).json({ message: "Assignment not found" });
     }
 
-    // Create a new submission
+    
     const submission = new Submission({
       assignment: assignmentId,
       student: studentId,

@@ -14,7 +14,7 @@ const {
   unenrollFromCourse,
 } = require("../controllers/course.controle.js");
 
-// Apply 'protect' middleware to all routes
+
 courseRouter.use(protect);
 
 // Only allow users with "admin" role to create a course

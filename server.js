@@ -13,7 +13,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Import Routes
+
 const assignmentSubmissionRouters = require("./routes/assignment__submission.route.js");
 const gradeRouter = require("./routes/grade.route.js");
 const userRoutes = require("./routes/user.route.js");
@@ -34,7 +34,7 @@ app.get("/", (req, res) => {
   res.status(200).json({ message: "Welcome to the Education Management API" });
 });
 
-// Error handling middleware
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res
